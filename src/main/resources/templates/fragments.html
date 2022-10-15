@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head th:fragment="head (titulo)">
-    <meta charset="UTF-8"/>
+    <meta charset="UTF-8" />
     <title th:text="${titulo}"></title>
     <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
 </head>
@@ -12,5 +12,38 @@
     <script th:src="@{/js/popper.min.js}"></script>
     <script th:src="@{/js/bootstrap.min.js}"></script>
 </div>
+
+<body>
+    <nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="/about">ToDoList</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
+            aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+            <ul th:if="${usuario != null}" class="navbar-nav ml-auto">
+                <li class="nav-item mr-auto">
+                    <a class="nav-link" th:href="'/usuarios/' + ${usuario.id} + '/tareas'">Tareas</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false" th:text="${usuario.nombre}"></a>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
+                        <a class="dropdown-item disabled" href="#">Cuenta</a>
+                        <a class="dropdown-item" href="/logout" th:text="'Cerrar sesión ' + ${usuario.nombre}"></a>
+                    </div>
+                </li>
+            </ul>
+            <ul th:if="${usuario == null}" class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/login">Login</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/registro">Registro</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</body>
 
 </html>
