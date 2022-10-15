@@ -80,9 +80,11 @@ public class TareaController {
             throw new TareaNotFoundException();
         }
 
-        comprobarUsuarioLogeado(tarea.getUsuario().getId());
+        Usuario usuario = usuarioService.findById(tarea.getUsuario().getId());
+        comprobarUsuarioLogeado(usuario.getId());
 
         model.addAttribute("tarea", tarea);
+        model.addAttribute("usuario", usuario);
         tareaData.setTitulo(tarea.getTitulo());
         return "formEditarTarea";
     }
