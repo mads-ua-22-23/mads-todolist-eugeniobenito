@@ -9,9 +9,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -91,5 +92,19 @@ public class UsuarioWebTest {
                         .param("eMail","ana.garcia@gmail.com")
                         .param("password","000"))
                 .andExpect(content().string(containsString("Contraseña incorrecta")));
+    }
+    
+    @Test
+    public void servicioListarUsuarios() throws Exception {
+
+        // WHEN, THEN
+        // Realizamos una petición get con la lista de usuarios
+        this.mockMvc.perform(get("/registrados"))
+        .andExpect((content().string(allOf(
+                containsString("Lista de usuarios"),
+                containsString("Id"),
+                containsString("Email"),
+                containsString("Total usuarios:")
+        ))));
     }
 }
