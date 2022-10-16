@@ -175,4 +175,35 @@ public class UsuarioTest {
 
         assertThat(usuarioBD.getNombre()).isEqualTo("Usuario Ejemplo");
     }
+
+    @Test
+    @Transactional
+    public void listaUsuarios() {
+        // GIVEN 
+        // Se registran 2 usuarios en la base de datos
+        Usuario usuario_1 = new Usuario("user1@ua");
+        Usuario usuario_2 = new Usuario("user2@ua");
+        usuarioRepository.save(usuario_1);
+        usuarioRepository.save(usuario_2);
+
+        // WHEN
+        // Recuperamos la lista con todos los usuarios
+        Iterable<Usuario> usuarios = usuarioRepository.findAll(); 
+
+        // THEN
+        // Se recupera una lista con dos elementos
+        assertThat(usuarios).hasSize(2);
+
+        // Si registramos un usuario más, la lista aumenta
+        Usuario usuario_3 = new Usuario("user3@ua");
+        usuarioRepository.save(usuario_3);
+        usuarios = usuarioRepository.findAll(); 
+        assertThat(usuarios).hasSize(3);
+
+        // Si eliminamos a todos los usuarios, la lista 
+        // estará vacía
+        usuarioRepository.deleteAll();
+        usuarios = usuarioRepository.findAll(); 
+        assertThat(usuarios).hasSize(0);
+    }
 }

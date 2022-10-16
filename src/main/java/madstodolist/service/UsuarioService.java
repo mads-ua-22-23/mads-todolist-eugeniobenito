@@ -56,4 +56,9 @@ public class UsuarioService {
     public Usuario findById(Long usuarioId) {
         return usuarioRepository.findById(usuarioId).orElse(null);
     }
+
+    @Transactional(readOnly = true)
+    public Iterable<Usuario> allUsuarios() {
+        return usuarioRepository.findAll();
+    }
 }

@@ -29,6 +29,16 @@ public class UsuarioServiceTest {
         return usuario.getId();
     }
 
+    // Método para incializar varios usuarios de prueba en BD
+    public void addDosUsuariosBD() {
+        Usuario usuario_1 = new Usuario("user1@ua");
+        usuario_1.setPassword("123");
+        Usuario usuario_2 = new Usuario("user2@ua");
+        usuario_2.setPassword("123");
+        usuario_1 = usuarioService.registrar(usuario_1);
+        usuario_2 = usuarioService.registrar(usuario_2);        
+    }
+
     @Test
     public void servicioLoginUsuario() {
         // GIVEN
@@ -155,5 +165,26 @@ public class UsuarioServiceTest {
         assertThat(usuario.getId()).isEqualTo(usuarioId);
         assertThat(usuario.getEmail()).isEqualTo("user@ua");
         assertThat(usuario.getNombre()).isEqualTo("Usuario Ejemplo");
+    }
+
+    @Test
+    public void servicioConsultaListaUsuarios() {
+        // GIVEN
+        // Cargamos 2 usuarios en la base de datos
+        addDosUsuariosBD();
+
+        // WHEN
+        // Recuperamos a dos todos los usuarios
+        Iterable<Usuario> usuarios = usuarioService.allUsuarios();
+
+        // THEN
+        // Los usuarios obtenidos se corresponden con los registrados
+        for(Usuario user : usuarios) {
+            Usuario usuario = usuarioService.findByEmail(user.getEmail());
+            assertThat(usuario).isEqualTo(user);
+        }
+
+        // La lista contiene exactamente los usuarios registrados
+        assertThat(usuarios).hasSize(2);
     }
 }
