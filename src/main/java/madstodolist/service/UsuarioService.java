@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -44,6 +46,8 @@ public class UsuarioService {
             throw new UsuarioServiceException("El usuario no tiene email");
         else if (usuario.getPassword() == null)
             throw new UsuarioServiceException("El usuario no tiene password");
+        else if (usuario.getIsAdmin() != null && usuario.getIsAdmin() && findAdmin() != null)
+            throw new UsuarioServiceException("Ya existe un administrador");
         else return usuarioRepository.save(usuario);
     }
 
@@ -60,5 +64,16 @@ public class UsuarioService {
     @Transactional(readOnly = true)
     public Iterable<Usuario> allUsuarios() {
         return usuarioRepository.findAll();
+    }
+
+    // En caso de existir usuario administrador, lo devolverá
+    // En caso contrario devolverá 'null'
+    @Transactional(readOnly = true)
+    public Usuario findAdmin() {
+        Iterable<Usuario> iterable_admin = usuarioRepository.findByIsAdminTrue();
+        List<Usuario> list_admin = new ArrayList<Usuario>();
+        iterable_admin.forEach(list_admin::add);
+
+        return (list_admin.isEmpty()) ? null : list_admin.get(0);
     }
 }

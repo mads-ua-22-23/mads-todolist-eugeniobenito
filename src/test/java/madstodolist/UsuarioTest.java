@@ -10,8 +10,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
 
 @SpringBootTest
@@ -20,7 +23,6 @@ public class UsuarioTest {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
-
 
     //
     // Tests modelo Usuario en memoria, sin la conexión con la BD
@@ -38,6 +40,7 @@ public class UsuarioTest {
 
         usuario.setNombre("Juan Gutiérrez");
         usuario.setPassword("12345678");
+        usuario.setIsAdmin(true);
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         usuario.setFechaNacimiento(sdf.parse("1997-02-20"));
@@ -50,6 +53,7 @@ public class UsuarioTest {
         assertThat(usuario.getNombre()).isEqualTo("Juan Gutiérrez");
         assertThat(usuario.getPassword()).isEqualTo("12345678");
         assertThat(usuario.getFechaNacimiento()).isEqualTo(sdf.parse("1997-02-20"));
+        assertTrue(usuario.getIsAdmin());
     }
 
     @Test
@@ -68,7 +72,6 @@ public class UsuarioTest {
         assertThat(usuario1).isEqualTo(usuario2);
         assertThat(usuario1).isNotEqualTo(usuario3);
     }
-
 
     @Test
     public void comprobarIgualdadUsuariosConId() {
@@ -179,7 +182,7 @@ public class UsuarioTest {
     @Test
     @Transactional
     public void listaUsuarios() {
-        // GIVEN 
+        // GIVEN
         // Se registran 2 usuarios en la base de datos
         Usuario usuario_1 = new Usuario("user1@ua");
         Usuario usuario_2 = new Usuario("user2@ua");
@@ -188,7 +191,7 @@ public class UsuarioTest {
 
         // WHEN
         // Recuperamos la lista con todos los usuarios
-        Iterable<Usuario> usuarios = usuarioRepository.findAll(); 
+        Iterable<Usuario> usuarios = usuarioRepository.findAll();
 
         // THEN
         // Se recupera una lista con dos elementos
@@ -197,13 +200,41 @@ public class UsuarioTest {
         // Si registramos un usuario más, la lista aumenta
         Usuario usuario_3 = new Usuario("user3@ua");
         usuarioRepository.save(usuario_3);
-        usuarios = usuarioRepository.findAll(); 
+        usuarios = usuarioRepository.findAll();
         assertThat(usuarios).hasSize(3);
 
-        // Si eliminamos a todos los usuarios, la lista 
+        // Si eliminamos a todos los usuarios, la lista
         // estará vacía
         usuarioRepository.deleteAll();
-        usuarios = usuarioRepository.findAll(); 
+        usuarios = usuarioRepository.findAll();
         assertThat(usuarios).hasSize(0);
+    }
+
+    @Test
+    @Transactional
+    public void crearUsuarioAdministradorBaseDatos() {
+
+        // GIVEN
+        // Un usuario administrador creado
+        Usuario usuario = new Usuario("user@ua");
+        usuario.setNombre("Usuario Ejemplo");
+        usuario.setIsAdmin(true);
+
+        // WHEN
+        // se guarda en la base de datos
+        usuarioRepository.save(usuario);
+
+        // THEN
+        // Se obtiene una lista con el usuario administrador creado
+        Iterable<Usuario> admin = usuarioRepository.findByIsAdminTrue();
+        List<Usuario> result = new ArrayList<Usuario>();
+        admin.forEach(result::add);
+
+        // Comprobamos que el usuario administrador se ha recuperado correctamente
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0)).isEqualTo(usuario);
+        assertThat(result.get(0).getEmail()).isEqualTo("user@ua");
+        assertThat(result.get(0).getNombre()).isEqualTo("Usuario Ejemplo");
+        assertTrue(result.get(0).getIsAdmin());
     }
 }
