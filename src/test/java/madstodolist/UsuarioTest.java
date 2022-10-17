@@ -12,6 +12,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
 
 @SpringBootTest
@@ -38,7 +39,8 @@ public class UsuarioTest {
 
         usuario.setNombre("Juan Gutiérrez");
         usuario.setPassword("12345678");
-
+        usuario.setIsAdmin(true);
+        
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         usuario.setFechaNacimiento(sdf.parse("1997-02-20"));
 
@@ -50,6 +52,7 @@ public class UsuarioTest {
         assertThat(usuario.getNombre()).isEqualTo("Juan Gutiérrez");
         assertThat(usuario.getPassword()).isEqualTo("12345678");
         assertThat(usuario.getFechaNacimiento()).isEqualTo(sdf.parse("1997-02-20"));
+        assertTrue(usuario.getIsAdmin());
     }
 
     @Test
