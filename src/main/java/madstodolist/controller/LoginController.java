@@ -59,7 +59,11 @@ public class LoginController {
 
     @GetMapping("/registro")
     public String registroForm(Model model) {
-        model.addAttribute("registroData", new RegistroData());
+        RegistroData registroData = new RegistroData();
+        boolean isAdmin = (usuarioService.findAdmin() != null) ? true : false;
+        registroData.setIsAdmin(isAdmin);  
+        
+        model.addAttribute("registroData", registroData);
         return "formRegistro";
     }
 
@@ -76,10 +80,24 @@ public class LoginController {
             return "formRegistro";
         }
 
+        if (registroData.getIsAdmin() && usuarioService.findAdmin() != null) {
+            model.addAttribute("registroData", registroData);
+            model.addAttribute("error", "Ya existe un usuario administrador");
+            return "formRegistro";
+        }
+
+
         Usuario usuario = new Usuario(registroData.geteMail());
         usuario.setPassword(registroData.getPassword());
         usuario.setFechaNacimiento(registroData.getFechaNacimiento());
         usuario.setNombre(registroData.getNombre());
+        usuario.setIsAdmin(registroData.getIsAdmin());
+
+        if (usuario.getIsAdmin()) {
+            usuarioService.registrar(usuario);
+            managerUserSession.logearUsuario(usuario.getId());
+            return "redirect:/registrados";
+        }
 
         usuarioService.registrar(usuario);
         return "redirect:/login";

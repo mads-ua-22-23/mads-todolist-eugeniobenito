@@ -156,4 +156,36 @@ public class UsuarioWebTest {
                                                 containsString("Usuario Ejemplo"),
                                                 containsString("user@ua")))));
         }
+
+        @Test
+        public void servicioRegistrarUsuarioAdminNoExiste() throws Exception {
+                this.mockMvc.perform(get("/registro"))
+                .andExpect((content().string(allOf(
+                        containsString("Quiero ser"),
+                        containsString("Administrador")))));
+        }
+
+        @Test
+        public void servicioRegistrarUsuarioAdminExiste() throws Exception {
+
+                // GIVEN
+                // Un usuario con correo, Id y administrado
+                Usuario usuario = new Usuario("user@ua");
+                usuario.setNombre("Usuario Ejemplo");
+                usuario.setId(1L);
+                usuario.setIsAdmin(true);
+
+                // WHEN
+                // Mockeamos el servicio de obtención del administrador para 
+                // que nos devuelva al usuario que acabamos de crea
+                when(usuarioService.findAdmin()).thenReturn(usuario);
+
+                // THEN
+                // Se realiza la petición GET a la página de registro y comprobamos la ausencia
+                // del checkbox
+                this.mockMvc.perform(get("/registro"))
+                        .andExpect(content().string(
+                                allOf(not(containsString("Quiero ser")),
+                                     (not(containsString("Administrador"))))));
+        }
 }
