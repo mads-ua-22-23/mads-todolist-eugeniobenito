@@ -15,6 +15,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @SpringBootTest
 @AutoConfigureMockMvc
 //
@@ -96,6 +99,22 @@ public class UsuarioWebTest {
 
         @Test
         public void servicioListarUsuarios() throws Exception {
+                // GIVEN
+                // Dos usuarios con correo, ID
+                Usuario usuario = new Usuario("user@ua");
+                usuario.setId(1L);
+
+                Usuario usuario_2 = new Usuario("user_2@ua");
+                usuario.setId(2L);
+
+                List<Usuario> listaUsuarios = new ArrayList<Usuario>();
+                listaUsuarios.add(usuario);
+                listaUsuarios.add(usuario_2);
+
+                // WHEN
+                // Mockeamos el servicio de obtención de todos los usuarios para que nos devuelva
+                // la lista de usuarios
+                when(usuarioService.allUsuarios()).thenReturn(listaUsuarios);
 
                 // WHEN, THEN
                 // Realizamos una petición get con la lista de usuarios
@@ -104,12 +123,15 @@ public class UsuarioWebTest {
                                                 containsString("Lista de usuarios"),
                                                 containsString("Id"),
                                                 containsString("Email"),
+                                                containsString("user@ua"),
+                                                containsString("user_2@ua"),
+                                                containsString("Detalles"),
                                                 containsString("Total usuarios:")))));
         }
 
         @Test
         public void servicioDescripciónUsuario() throws Exception {
-                
+
                 // GIVEN
                 // Un usuario con correo y Id
                 Usuario usuario = new Usuario("user@ua");
@@ -117,7 +139,7 @@ public class UsuarioWebTest {
                 usuario.setId(1L);
 
                 // WHEN
-                // Mockeamos el servicio de búsqueda por Id para que nos devuelva el 
+                // Mockeamos el servicio de búsqueda por Id para que nos devuelva el
                 // usuario que acabamos de crear
                 when(usuarioService.findById(usuario.getId())).thenReturn(usuario);
 
@@ -125,13 +147,13 @@ public class UsuarioWebTest {
                 // Se realiza la petición GET a la descipción del usuario,
                 // el HTML devuelto contiene la información de nuestro usuario
                 this.mockMvc.perform(get("/registrados/1"))
-                .andExpect((content().string(allOf(
-                                containsString("Descripción de user@ua"),
-                                containsString("Id"),
-                                containsString("Nombre"),
-                                containsString("Email"),
-                                containsString("Fecha de nacimiento"),
-                                containsString("Usuario Ejemplo"),
-                                containsString("user@ua")))));
+                                .andExpect((content().string(allOf(
+                                                containsString("Descripción de user@ua"),
+                                                containsString("Id"),
+                                                containsString("Nombre"),
+                                                containsString("Email"),
+                                                containsString("Fecha de nacimiento"),
+                                                containsString("Usuario Ejemplo"),
+                                                containsString("user@ua")))));
         }
 }
