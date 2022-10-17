@@ -23,31 +23,35 @@
                         <tr>
                             <th>Id</th>
                             <th>Email</th>
+                            <th></th> 
                         </tr>
                     </thead>
                     <tbody>
                         <tr th:each="usuario : ${usuarios}">
                             <td><span th:text="${usuario.id}"></span></td>
                             <td><span th:text="${usuario.email}"></span></td>
+                            <td>
+                                <a class="btn btn-link" th:href="@{/registrados/{id}(id=${usuario.id})}">Detalles</a>                            
+                            </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
-    <div th:replace="fragments::javascript" />
+    <div th:replace=" fragments::javascript" />
 
-    <!-- Lanzamos una petición DELETE por JavaScript para borrar una tarea -->
+                                <!-- Lanzamos una petición DELETE por JavaScript para borrar una tarea -->
 
-    <script type="text/javascript">
-        function del(urlBorrar) {
-            if (confirm('¿Estás seguro/a de que quieres borrar la tarea?')) {
-                fetch(urlBorrar, {
-                    method: 'DELETE'
-                }).then((res) => location.reload());
-            }
-        }
-    </script>
+                                <script type="text/javascript">
+                                    function del(urlBorrar) {
+                                        if (confirm('¿Estás seguro/a de que quieres borrar la tarea?')) {
+                                            fetch(urlBorrar, {
+                                                method: 'DELETE'
+                                            }).then((res) => location.reload());
+                                        }
+                                    }
+                                </script>
 
 </body>
 

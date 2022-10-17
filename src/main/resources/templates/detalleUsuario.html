@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments :: head (titulo=${user.nombre})"></head>
+
+<body>
+    <nav th:insert="fragments::navbar"></nav>
+    <div class="container-fluid">
+        <div class="row mt-3">
+            <div class="col">
+                <h2 th:text="'Descripción de ' + ${user.email}"></h2>
+            </div>
+        </div>
+        <div class="row mt-2">
+            <div class="col">
+                <table class="table table-striped">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Id</th>
+                            <th>Nombre</th>
+                            <th>Email</th>
+                            <th>Fecha de nacimiento</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span th:text="${user.id}"></span></td>
+                            <td>
+                                <span th:if="${user.nombre == ''}">-</span>
+                                <span th:unless="${user.nombre == ''}" th:text="${user.nombre}"></span>
+                            </td>
+                            <td><span th:text="${user.email}"></span></td>
+                            <td>
+                                <span th:text="${user.fechaNacimiento} ?: '-'">-</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="fragments::javascript" />
+
+</body>
+
+</html>
