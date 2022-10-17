@@ -187,4 +187,63 @@ public class UsuarioServiceTest {
         // La lista contiene exactamente los usuarios registrados
         assertThat(usuarios).hasSize(2);
     }
+
+    @Test
+    public void servicioRegistroUsuarioAdmin() {
+        
+        // GIVEN
+        // Creado un usuario nuevo, con una contraseña y como administrador
+        Usuario usuario = new Usuario("user@ua");
+        usuario.setPassword("12345678");
+        usuario.setIsAdmin(true);
+
+        // WHEN
+        // registramos el usuario
+        usuarioService.registrar(usuario);
+
+        // THEN
+        // el usuario se añade correctamente al sistema
+        Usuario usuarioByEmail = usuarioService.findByEmail("user@ua");
+        Usuario usuarioByAdmin = usuarioService.findAdmin();
+
+        assertThat(usuarioByAdmin).isNotNull();
+        assertThat(usuarioByEmail.getEmail()).isEqualTo(usuarioByAdmin.getEmail());
+    }
+
+    @Test
+    public void servicioRegistroUsuarioAdminExcepcionAdminYaExistente() {
+        
+        // GIVEN
+        // Un usuario administrador creado y registrado
+        Usuario usuario = new Usuario("user@ua");
+        usuario.setPassword("12345678");
+        usuario.setIsAdmin(true);
+        usuarioService.registrar(usuario);
+
+        // WHEN
+        // Intentamos registrar otro usuario administrador
+        Usuario fake_admin = new Usuario("fake_admin@ua");
+        fake_admin.setPassword("12345678");
+        fake_admin.setIsAdmin(true);
+
+        // THEN
+        // Si intentamos registrarlo, se produce una excepción de tipo UsuarioServiceException
+        Assertions.assertThrows(UsuarioServiceException.class, () -> {
+            usuarioService.registrar(fake_admin);
+        });
+    }    
+
+    @Test
+    public void servicioSolitarAdminInexistenteDevuelveNull() {
+        
+        // GIVEN
+        // Un usuario no administrador creado y registrado
+        Usuario usuario = new Usuario("user@ua");
+        usuario.setPassword("12345678");
+        usuarioService.registrar(usuario);
+
+        // WHEN, THEN      
+        // Intentamos obtener al administrador recibimos null
+        assertThat(usuarioService.findAdmin()).isNull();
+    }    
 }
