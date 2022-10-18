@@ -1,5 +1,6 @@
 package madstodolist;
 
+import madstodolist.authentication.ManagerUserSession;
 import madstodolist.model.Usuario;
 import madstodolist.service.UsuarioService;
 import org.junit.jupiter.api.Test;
@@ -35,6 +36,10 @@ public class UsuarioWebTest {
         // las peticiones a los endpoint.
         @MockBean
         private UsuarioService usuarioService;
+
+        // Moqueamos el managerUserSession para poder moquear el usuario logeado
+        @MockBean
+        private ManagerUserSession managerUserSession;
 
         @Test
         public void servicioLoginUsuarioOK() throws Exception {
@@ -111,10 +116,23 @@ public class UsuarioWebTest {
                 listaUsuarios.add(usuario);
                 listaUsuarios.add(usuario_2);
 
+                // Y un usuario administrador
+                Usuario admin = new Usuario("admin@ua");
+                admin.setNombre("Admin");
+                admin.setId(3L);
+                admin.setIsAdmin(true);
+
                 // WHEN
                 // Mockeamos el servicio de obtención de todos los usuarios para que nos devuelva
                 // la lista de usuarios
                 when(usuarioService.allUsuarios()).thenReturn(listaUsuarios);
+
+                // Mockeamos el servicio de obtención del administrador para 
+                // que nos devuelva al adminitrador que acabamos de crea
+                when(usuarioService.findAdmin()).thenReturn(admin);
+
+                // Mockeamos el método usuarioLogeado para que nos devuelva al administrador
+                when(managerUserSession.usuarioLogeado()).thenReturn(admin.getId());
 
                 // WHEN, THEN
                 // Realizamos una petición get con la lista de usuarios
@@ -138,10 +156,23 @@ public class UsuarioWebTest {
                 usuario.setNombre("Usuario Ejemplo");
                 usuario.setId(1L);
 
+                // Y un usuario administrador
+                Usuario admin = new Usuario("admin@ua");
+                admin.setNombre("Admin");
+                admin.setId(2L);
+                admin.setIsAdmin(true);
+
                 // WHEN
                 // Mockeamos el servicio de búsqueda por Id para que nos devuelva el
                 // usuario que acabamos de crear
                 when(usuarioService.findById(usuario.getId())).thenReturn(usuario);
+
+                // Mockeamos el servicio de obtención del administrador para 
+                // que nos devuelva al usuario que acabamos de crea
+                when(usuarioService.findAdmin()).thenReturn(admin);
+
+                // Mockeamos el método usuarioLogeado para que nos devuelva al administrador
+                when(managerUserSession.usuarioLogeado()).thenReturn(admin.getId());
 
                 // THEN
                 // Se realiza la petición GET a la descipción del usuario,
