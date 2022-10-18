@@ -138,6 +138,8 @@ public class UsuarioWebTest {
                 // Realizamos una petición get con la lista de usuarios
                 this.mockMvc.perform(get("/registrados"))
                                 .andExpect((content().string(allOf(
+                                                containsString("Admin"),
+                                                containsString("Tareas"),
                                                 containsString("Lista de usuarios"),
                                                 containsString("Id"),
                                                 containsString("Email"),
@@ -179,6 +181,8 @@ public class UsuarioWebTest {
                 // el HTML devuelto contiene la información de nuestro usuario
                 this.mockMvc.perform(get("/registrados/1"))
                                 .andExpect((content().string(allOf(
+                                                containsString("Admin"),
+                                                containsString("Tareas"),
                                                 containsString("Descripción de user@ua"),
                                                 containsString("Id"),
                                                 containsString("Nombre"),

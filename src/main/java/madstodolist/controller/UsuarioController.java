@@ -36,6 +36,8 @@ public class UsuarioController {
         
         comprobarUsuarioAdminYLogeado(managerUserSession.usuarioLogeado());
 
+        Usuario admin = usuarioService.findAdmin();
+        model.addAttribute("usuario", admin); 
         model.addAttribute("usuarios", usuarioService.allUsuarios());
         return "listaUsuarios";
     }
@@ -45,8 +47,14 @@ public class UsuarioController {
         
         comprobarUsuarioAdminYLogeado(managerUserSession.usuarioLogeado());
 
+        // Usuario del que se mostrarán los detalles   
         Usuario usuario = usuarioService.findById(idUsiario);
         model.addAttribute("user", usuario);
+
+        // Usuario administrador
+        Usuario admin = usuarioService.findAdmin();
+        model.addAttribute("usuario", admin);
+        
         return "detalleUsuario";
     }
     
