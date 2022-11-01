@@ -57,7 +57,7 @@ public class NavbarWebTest {
         for(String url : urls) {
             this.mockMvc.perform(get(url))
             .andExpect((content().string(allOf(
-                    containsString("ToDoList"),
+                    containsString("ToList"),
                     containsString("Tareas"),
                     containsString("Cuenta"),
                     containsString("Usuario Ejemplo")))));        
