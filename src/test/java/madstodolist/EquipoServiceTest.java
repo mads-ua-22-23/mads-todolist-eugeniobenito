@@ -90,4 +90,23 @@ public class EquipoServiceTest {
         assertThat(usuarios.get(0).getEmail()).isEqualTo("user@ua");
     }
 
+    @Test
+    public void comprobarRelacionUsuarioEquipos() {
+        // GIVEN
+        // Un equipo creado en la base de datos y un usuario registrado
+        Equipo equipo = equipoService.crearEquipo("Proyecto 1");
+        Usuario usuario = new Usuario("user@ua");
+        usuario.setPassword("123");
+        usuario = usuarioService.registrar(usuario);
+
+        // WHEN
+        // Añadimos el usuario al equipo y lo recuperamos
+        equipoService.addUsuarioEquipo(usuario.getId(), equipo.getId());
+        Usuario usuarioBD = usuarioService.findById(usuario.getId());
+
+        // THEN
+        // Se recuperan también los equipos del usuario,
+        // porque la relación entre usuarios y equipos es EAGER
+        assertThat(usuarioBD.getEquipos()).hasSize(1);
+    }
 }
