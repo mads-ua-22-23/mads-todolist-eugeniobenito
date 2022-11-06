@@ -8,6 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import madstodolist.model.Equipo;
 import madstodolist.model.EquipoRepository;
+import madstodolist.model.Usuario;
+import madstodolist.model.UsuarioRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
@@ -18,6 +20,9 @@ public class EquipoTest {
 
     @Autowired
     private EquipoRepository equipoRepository;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
     //
     // Tests modelo Equipo en memoria, sin la conexión con la BD
@@ -79,5 +84,33 @@ public class EquipoTest {
         Equipo equipoDB = equipoRepository.findById(equipoId).orElse(null);
         assertThat(equipoDB).isNotNull();
         assertThat(equipoDB.getNombre()).isEqualTo("Proyecto P1");
+    }
+
+    @Test
+    @Transactional
+    public void comprobarRelacionBaseDatos() {
+        // GIVEN
+        // Un equipo y un usuario en la BD
+        Equipo equipo = new Equipo("Proyecto 1");
+        equipoRepository.save(equipo);
+
+        Usuario usuario = new Usuario("user@ua");
+        usuarioRepository.save(usuario);
+
+        // WHEN
+        // Añadimos el usuario al equipo
+
+        equipo.addUsuario(usuario);
+
+        // THEN
+        // La relación entre usuario y equipo pqueda actualizada en BD
+
+        Equipo equipoBD = equipoRepository.findById(equipo.getId()).orElse(null);
+        Usuario usuarioBD = usuarioRepository.findById(usuario.getId()).orElse(null);
+
+        assertThat(equipo.getUsuarios()).hasSize(1);
+        assertThat(equipo.getUsuarios()).contains(usuario);
+        assertThat(usuario.getEquipos()).hasSize(1);
+        assertThat(usuario.getEquipos()).contains(equipo);
     }
 }
