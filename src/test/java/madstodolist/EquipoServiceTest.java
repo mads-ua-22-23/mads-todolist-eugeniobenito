@@ -1,7 +1,9 @@
 package madstodolist;
 
 import madstodolist.model.Equipo;
+import madstodolist.model.Usuario;
 import madstodolist.service.EquipoService;
+import madstodolist.service.UsuarioService;
 
 import org.hibernate.LazyInitializationException;
 import org.junit.jupiter.api.Test;
@@ -21,6 +23,9 @@ public class EquipoServiceTest {
 
     @Autowired
     EquipoService equipoService;
+
+    @Autowired
+    UsuarioService usuarioService;
 
     @Test
     public void crearRecuperarEquipo() {
@@ -64,4 +69,25 @@ public class EquipoServiceTest {
             equipoBd.getUsuarios().size();
         }).isInstanceOf(LazyInitializationException.class);
     }
+
+    @Test
+    public void actualizarRecuperarUsuarioEquipo() {
+        // GIVEN
+        // Un equipo creado en la base de datos y un usuario registrado
+        Equipo equipo = equipoService.crearEquipo("Proyecto 1");
+        Usuario usuario = new Usuario("user@ua");
+        usuario.setPassword("123");
+        usuario = usuarioService.registrar(usuario);
+
+        // WHEN
+        // Añadimos el usuario al equipo y lo recuperamos
+        equipoService.addUsuarioEquipo(usuario.getId(), equipo.getId());
+        List<Usuario> usuarios = equipoService.usuariosEquipo(equipo.getId());
+
+        // THEN
+        // El usuario se ha recuperado correctamente
+        assertThat(usuarios).hasSize(1);
+        assertThat(usuarios.get(0).getEmail()).isEqualTo("user@ua");
+    }
+
 }
