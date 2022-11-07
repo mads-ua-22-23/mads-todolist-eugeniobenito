@@ -55,7 +55,11 @@ public class EquipoService {
     public void addUsuarioEquipo(Long usuario_id, Long equipo_id) {
         logger.debug("Añadiendo el usuario " + usuario_id + " al equipo " + equipo_id);
         Equipo equipo = equipoRepository.findById(equipo_id).orElse(null);
-        Usuario usuario = usuarioRepository.findById(usuario_id).orElse(null);;
+        Usuario usuario = usuarioRepository.findById(usuario_id).orElse(null);
+
+        if (equipo == null || usuario == null) 
+            throw new EquipoServiceException("No existe el equipo o el usuario");
+
         equipo.addUsuario(usuario);
         equipoRepository.save(equipo);
     }
