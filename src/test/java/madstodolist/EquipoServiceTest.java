@@ -148,4 +148,15 @@ public class EquipoServiceTest {
             equipoService.crearEquipo("");
         });
     }
+
+    @Test
+    public void servicioRecuperarEquipoNoExistente() {
+        // WHEN, THEN   
+        // Intentamos recuperar un  equipo no existente en la base de datos
+        // lanza excepción de tipo EquipoServiceException
+        
+        Assertions.assertThrows(EquipoServiceException.class, () -> {
+            equipoService.recuperarEquipo(1L);
+        });
+    }
 }

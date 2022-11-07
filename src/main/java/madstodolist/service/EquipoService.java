@@ -37,7 +37,12 @@ public class EquipoService {
     @Transactional(readOnly = true)
     public Equipo recuperarEquipo(Long id) {
         logger.debug("Devolviendo el equipo con id: " + id);
-        return equipoRepository.findById(id).orElse(null);
+        Equipo equipoBD = equipoRepository.findById(id).orElse(null);
+        
+        if (equipoBD == null) 
+            throw new EquipoServiceException("No existe el equipo");
+
+        return equipoBD;
     }
 
     @Transactional(readOnly = true)
