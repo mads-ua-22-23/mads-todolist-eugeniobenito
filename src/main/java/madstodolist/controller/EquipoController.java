@@ -66,6 +66,22 @@ public class EquipoController {
         return "formNuevoEquipo";
     }
 
+    @PostMapping("/equipos/nuevo")
+    public String nuevoEquipo(Model model, @Valid EquipoData equipoData,
+            BindingResult result) {
+        Long idUsuarioLogeado = managerUserSession.usuarioLogeado();
+
+        if (result.hasErrors()) {
+            return "formNuevoEquipo";
+        }
+
+        if (idUsuarioLogeado == null)
+            throw new UsuarioNoLogeadoException();
+
+        equipoService.crearEquipo(equipoData.getNombre());
+        return "redirect:/equipos";
+    }
+
     @GetMapping("/equipos/{id}")
     public String listadoUsuariosEquipos(@PathVariable(value = "id") Long equipo_id, Model model, HttpSession session) {
         Long idUsuarioLogeado = managerUserSession.usuarioLogeado();

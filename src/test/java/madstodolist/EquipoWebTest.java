@@ -14,6 +14,7 @@ import madstodolist.service.UsuarioService;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.List;
@@ -159,7 +160,7 @@ public class EquipoWebTest {
         usuario.setNombre("Usuario Ejemplo");
         usuario.setId(1L);
 
-        // Un equipo 
+        // Un equipo
         Equipo equipo = new Equipo("Equipo A");
 
         List<Equipo> listaEquipos = new ArrayList<Equipo>();
@@ -183,5 +184,26 @@ public class EquipoWebTest {
                         containsString("Crea un"),
                         containsString("Nombre del Equipo:"),
                         containsString("Crear Equipo")))));
+    }
+
+    @Test
+    public void servicioCrearEquipo() throws Exception {
+
+        // GIVEN
+        // Un usuario con correo e ID
+        Usuario usuario = new Usuario("user@ua");
+        usuario.setNombre("Usuario Ejemplo");
+        usuario.setId(1L);
+
+        // Mockeamos el método usuarioLogeado para que nos devuelva un valor
+        when(managerUserSession.usuarioLogeado()).thenReturn(usuario.getId());
+
+        // WHEN, THEN
+        // Realizamos una petición GET: /equipos/nuevo nos redirecciona
+        // a la lista de equipos
+        this.mockMvc.perform(post("/equipos/nuevo")
+                .param("nombre", "MADS"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/equipos"));
     }
 }
