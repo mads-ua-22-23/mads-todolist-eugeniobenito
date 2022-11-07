@@ -22,32 +22,49 @@
                     <thead class="thead-dark">
                         <tr>
                             <th>Nombre</th>
+                            <th>Acción</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr th:each="equipo : ${equipos}">
-                            <td> 
+                            <td>
                                 <a class="btn btn-link" th:href="@{/equipos/{id}(id=${equipo.id})}">
                                     <span th:text="${equipo.nombre}"></span>
                                 </a>
                             </td>
+                            <td>
+                                <button th:unless="${#lists.contains(usuario.equipos, equipo)}"
+                                    class="btn btn-primary btn-xs" onmouseover="" style="cursor: pointer;"
+                                    th:onclick="'post(\'/equipos/'  + ${equipo.id} + '/usuarios/' + ${usuario.id} + '\');'">Unirme al equipo
+                                </button>
+                                <button th:if="${#lists.contains(usuario.equipos, equipo)}"
+                                    class="btn btn-danger btn-xs" onmouseover="" style="cursor: pointer;"
+                                    th:onclick="'del(\'/equipos/'  + ${equipo.id} + '/usuarios/' + ${usuario.id} + '\');'">Salir del equipo
+                                </button>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
+                <a class="btn btn-secondary" href="/equipos/nuevo"> Crear Equipo</a>
             </div>
         </div>
     </div>
     <div th:replace=" fragments::javascript" />
 
-    <!-- Lanzamos una petición DELETE por JavaScript para borrar una tarea -->
+    <!-- Lanzamos una petición POST por JavaScript para añadir un usuario a un equipo -->
+    <!-- Lanzamos una petición DELETE por JavaScript para eliminar a un usuario de un equipo -->
 
     <script type="text/javascript">
-        function del(urlBorrar) {
-            if (confirm('¿Estás seguro/a de que quieres borrar la tarea?')) {
-                fetch(urlBorrar, {
-                    method: 'DELETE'
-                }).then((res) => location.reload());
-            }
+        function post(url) {
+            fetch(url, {
+                method: 'POST'
+            }).then((res) => location.reload());
+        }
+
+        function del(url) {
+            fetch(url, {
+                method: 'DELETE'
+            }).then((res) => location.reload());
         }
     </script>
 

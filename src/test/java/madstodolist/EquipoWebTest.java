@@ -14,6 +14,7 @@ import madstodolist.service.UsuarioService;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.List;
@@ -68,6 +69,7 @@ public class EquipoWebTest {
         // página de listado de equipos
         this.mockMvc.perform(get("/equipos"))
                 .andExpect((content().string(allOf(
+                        containsString("Unirme al equipo"),
                         containsString("Lista de Equipos"),
                         containsString("Usuario Ejemplo"),
                         containsString("Equipo A")))));
@@ -110,5 +112,98 @@ public class EquipoWebTest {
                         containsString("Lista de miembros del Equipo"),
                         containsString("user@ua"),
                         containsString("Equipo A")))));
+    }
+
+    @Test
+    public void servicioListadoEquiposSalirDeEquipoOpcion() throws Exception {
+
+        // GIVEN
+        // Un usuario con correo e ID
+        Usuario usuario = new Usuario("user@ua");
+        usuario.setNombre("Usuario Ejemplo");
+        usuario.setId(1L);
+
+        // Un equipo con el usuario creado como miembro
+        Equipo equipo = new Equipo("Equipo A");
+        usuario.getEquipos().add(equipo);
+
+        List<Equipo> listaEquipos = new ArrayList<Equipo>();
+        listaEquipos.add(equipo);
+
+        // Mockeamos el método usuarioLogeado para que nos devuelva un valor
+        when(managerUserSession.usuarioLogeado()).thenReturn(usuario.getId());
+
+        // Mockeamos el servicio de obtención de todos los equipos para que nos devuelva
+        when(equipoService.findAllOrderedByName()).thenReturn(listaEquipos);
+
+        // Mockeamos el servicio de búsqueda por Id para que nos devuelva el
+        // usuario que acabamos de crear
+        when(usuarioService.findById(usuario.getId())).thenReturn(usuario);
+
+        // WHEN, THEN
+        // Realizamos una petición GET: /equipos nos redirecciona a la
+        // página de listado de equipos
+        this.mockMvc.perform(get("/equipos"))
+                .andExpect((content().string(allOf(
+                        containsString("Lista de Equipos"),
+                        containsString("Crear Equipo"),
+                        containsString("Salir del equipo"),
+                        containsString("Equipo A")))));
+    }
+
+    @Test
+    public void servicioObtenerFormularioCrearEquipo() throws Exception {
+
+        // GIVEN
+        // Un usuario con correo e ID
+        Usuario usuario = new Usuario("user@ua");
+        usuario.setNombre("Usuario Ejemplo");
+        usuario.setId(1L);
+
+        // Un equipo
+        Equipo equipo = new Equipo("Equipo A");
+
+        List<Equipo> listaEquipos = new ArrayList<Equipo>();
+        listaEquipos.add(equipo);
+
+        // Mockeamos el método usuarioLogeado para que nos devuelva un valor
+        when(managerUserSession.usuarioLogeado()).thenReturn(usuario.getId());
+
+        // Mockeamos el servicio de obtención de todos los equipos para que nos devuelva
+        when(equipoService.findAllOrderedByName()).thenReturn(listaEquipos);
+
+        // Mockeamos el servicio de búsqueda por Id para que nos devuelva el
+        // usuario que acabamos de crear
+        when(usuarioService.findById(usuario.getId())).thenReturn(usuario);
+
+        // WHEN, THEN
+        // Realizamos una petición GET: /equipos/nuevo nos redirecciona al
+        // formulario de creación de un equipo
+        this.mockMvc.perform(get("/equipos/nuevo"))
+                .andExpect((content().string(allOf(
+                        containsString("Crea un"),
+                        containsString("Nombre del Equipo:"),
+                        containsString("Crear Equipo")))));
+    }
+
+    @Test
+    public void servicioCrearEquipo() throws Exception {
+
+        // GIVEN
+        // Un usuario con correo e ID
+        Usuario usuario = new Usuario("user@ua");
+        usuario.setNombre("Usuario Ejemplo");
+        usuario.setId(1L);
+
+        // Mockeamos el método usuarioLogeado para que nos devuelva un valor
+        when(managerUserSession.usuarioLogeado()).thenReturn(usuario.getId());
+
+        // WHEN, THEN
+        // Realizamos una petición GET: /equipos/nuevo nos redirecciona
+        // a la lista de equipos
+        this.mockMvc.perform(post("/equipos/nuevo")
+                .param("nombre", "MADS"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/equipos"));
     }
 }
