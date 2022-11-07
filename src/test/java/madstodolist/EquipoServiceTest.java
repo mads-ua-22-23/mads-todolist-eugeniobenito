@@ -131,7 +131,7 @@ public class EquipoServiceTest {
         // ERecuperamos al usuario y al equipo y este no pertenece al mismo
         Equipo equipoBD = equipoService.recuperarEquipo(equipo.getId());
         Usuario usuarioBD = usuarioService.findById(usuario.getId());
-        
+
         List<Usuario> usuarios_equipo = equipoService.usuariosEquipo(equipoBD.getId());
 
         assertThat(usuarios_equipo).isEmpty();
@@ -140,10 +140,10 @@ public class EquipoServiceTest {
 
     @Test
     public void servicioCrearEquipoExcepcionNombreVacio() {
-        // WHEN, THEN   
+        // WHEN, THEN
         // Creamos un equipo con el nombre vacío se lanza una excepción
         // de tipo EquipoServiceException
-        
+
         Assertions.assertThrows(EquipoServiceException.class, () -> {
             equipoService.crearEquipo("");
         });
@@ -151,10 +151,10 @@ public class EquipoServiceTest {
 
     @Test
     public void servicioRecuperarEquipoNoExistente() {
-        // WHEN, THEN   
-        // Intentamos recuperar un  equipo no existente en la base de datos
+        // WHEN, THEN
+        // Intentamos recuperar un equipo no existente en la base de datos
         // lanza excepción de tipo EquipoServiceException
-        
+
         Assertions.assertThrows(EquipoServiceException.class, () -> {
             equipoService.recuperarEquipo(1L);
         });
@@ -162,11 +162,11 @@ public class EquipoServiceTest {
 
     @Test
     public void servicioAñadirUsuarioEquipoNoExistente() {
-        // WHEN, THEN   
-        // Intentamos añadir a un  equipo no existente en la base de datos
+        // WHEN, THEN
+        // Intentamos añadir a un equipo no existente en la base de datos
         // un usuario no existente
         // lanza excepción de tipo EquipoServiceException
-        
+
         Assertions.assertThrows(EquipoServiceException.class, () -> {
             equipoService.addUsuarioEquipo(1L, 1L);
         });
@@ -174,11 +174,11 @@ public class EquipoServiceTest {
 
     @Test
     public void servicioEliminarUsuarioEquipoNoExistente() {
-        // WHEN, THEN   
-        // Intentamos añadir a un  equipo no existente en la base de datos
+        // WHEN, THEN
+        // Intentamos añadir a un equipo no existente en la base de datos
         // un usuario no existente
         // lanza excepción de tipo EquipoServiceException
-        
+
         Assertions.assertThrows(EquipoServiceException.class, () -> {
             equipoService.removeUsuarioEquipo(1L, 1L);
         });
@@ -199,7 +199,7 @@ public class EquipoServiceTest {
         // Intentamos añadir al usuario miembro se lanza excepción de
         // tipo EquipoServiceException
         Usuario usuarioBD = usuarioService.findById(usuario.getId());
-                
+
         Assertions.assertThrows(EquipoServiceException.class, () -> {
             equipoService.addUsuarioEquipo(usuarioBD.getId(), equipo.getId());
         });
@@ -218,7 +218,7 @@ public class EquipoServiceTest {
         // Intentamos eliminar al usuario NO miembro se lanza excepción de
         // tipo EquipoServiceException
         Usuario usuarioBD = usuarioService.findById(usuario.getId());
-                
+
         Assertions.assertThrows(EquipoServiceException.class, () -> {
             equipoService.removeUsuarioEquipo(usuarioBD.getId(), equipo.getId());
         });
@@ -226,12 +226,55 @@ public class EquipoServiceTest {
 
     @Test
     public void servicioListarUsuarioEquipoNoExistente() {
-        // WHEN, THEN   
-        // Intentamos listar a los usuarios de un equipo no existente en la base de datos
+        // WHEN, THEN
+        // Intentamos listar a los usuarios de un equipo no existente en la base de
+        // datos
         // lanza excepción de tipo EquipoServiceException
-        
+
         Assertions.assertThrows(EquipoServiceException.class, () -> {
             equipoService.usuariosEquipo(1L);
+        });
+    }
+
+    @Test
+    public void testModificarNombreEquipo() {
+        // GIVEN
+        // Un equipo guardado en la base de datos
+        Equipo equipo = equipoService.crearEquipo("Proyecto 1");
+        Equipo equipoBd = equipoService.recuperarEquipo(equipo.getId());
+        assertThat(equipoBd.getNombre()).isEqualTo("Proyecto 1");
+
+        // WHEN
+        // Cambiamos su nombre
+        equipoService.modificaNombreEquipo(equipoBd.getId(), "Proyecto MADS");
+
+        // THEN
+        // Lo recuperamos de la base de datos y el nombre se ha modificado
+        assertThat(equipoBd.getNombre()).isEqualTo("Proyecto 1");
+    }
+
+    @Test
+    public void servicioEliminarEquipo() {
+        // GIVEN
+        // Un equipo guardado en la base de datos y un usuario miembro
+        Equipo equipo = equipoService.crearEquipo("Proyecto 1");
+        Usuario usuario = new Usuario("user@ua");
+        usuario.setPassword("123");
+        usuario = usuarioService.registrar(usuario);
+
+        equipoService.addUsuarioEquipo(usuario.getId(), equipo.getId());
+
+        // WHEN
+        // Eliminamos el equipo
+        Long equipo_id = equipo.getId();
+        equipoService.removeEquipo(equipo_id);
+
+        // THEN
+        // El equipo no está en la base de datos ni en la lista de
+        // equipos del usuarios
+        assertThat(usuarioService.findById(usuario.getId()).getEquipos().isEmpty());
+        Assertions.assertThrows(EquipoServiceException.class, () -> {
+            equipoService.recuperarEquipo(equipo_id);
         });
     }
 }

@@ -63,6 +63,13 @@ public class EquipoTest {
         assertThat(equipo2).isNotEqualTo(equipo3);
     }
 
+    @Test
+    public void cambiarNombreEquipo() {
+        Equipo equipo = new Equipo("Proyecto P1");
+        equipo.setNombre("Proyecto MADS");
+        assertThat(equipo.getNombre()).isEqualTo("Proyecto MADS");
+    }
+
     //
     // Tests EquipoRepository.
     //
@@ -167,4 +174,25 @@ public class EquipoTest {
         assertThat(usuario.getEquipos()).hasSize(0);
         assertThat(usuario.getEquipos()).isEmpty();
     }
+
+    @Test
+    @Transactional
+    public void actualizarNombreEquipo() {
+        // GIVEN
+        // Un equipo nuevo guardado en la base de datos
+        Equipo equipo = new Equipo("Proyecto P1");
+        equipoRepository.save(equipo);
+
+        // WHEN
+        // Lo obtenemos de la base de datos y cambiamos su nombre
+        Equipo equipoBD = equipoRepository.findById(equipo.getId()).orElse(null);
+        equipoBD.setNombre("Proyecto MADS");
+        equipoRepository.save(equipoBD);
+
+        // THEN
+        // Si lo volvemos a recuperar, el nombre ha cambiado
+        equipoBD = equipoRepository.findById(equipo.getId()).orElse(null);
+        assertThat(equipoBD.getNombre()).isEqualTo("Proyecto MADS");
+    }
+        
 }
