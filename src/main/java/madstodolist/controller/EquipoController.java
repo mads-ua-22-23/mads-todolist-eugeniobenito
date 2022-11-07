@@ -9,6 +9,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import madstodolist.authentication.ManagerUserSession;
 import madstodolist.controller.exception.UsuarioNoLogeadoException;
@@ -58,5 +60,20 @@ public class EquipoController {
         model.addAttribute("usuarios", usuarios);
         model.addAttribute("equipo", equipo);
         return "listaUsuariosEquipos";
+    }
+
+    @PostMapping("/equipos/{idEquipo}/usuarios/{idUsuario}")
+    @ResponseBody
+    public String nuevoUsuarioEquipo(@PathVariable(value = "idEquipo") Long equipo_id,
+            @PathVariable(value = "idUsuario") Long usuario_id,
+            Model model, HttpSession session) {
+
+        Long idUsuarioLogeado = managerUserSession.usuarioLogeado();
+
+        if (idUsuarioLogeado == null)
+            throw new UsuarioNoLogeadoException();
+
+        equipoService.addUsuarioEquipo(usuario_id, equipo_id);
+        return "";
     }
 }

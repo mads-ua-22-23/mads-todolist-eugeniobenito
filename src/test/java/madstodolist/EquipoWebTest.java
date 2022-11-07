@@ -68,6 +68,7 @@ public class EquipoWebTest {
         // página de listado de equipos
         this.mockMvc.perform(get("/equipos"))
                 .andExpect((content().string(allOf(
+                        containsString("Unirme al equipo"),
                         containsString("Lista de Equipos"),
                         containsString("Usuario Ejemplo"),
                         containsString("Equipo A")))));
