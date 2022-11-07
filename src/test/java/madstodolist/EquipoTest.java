@@ -131,4 +131,40 @@ public class EquipoTest {
         assertThat(equipos).hasSize(2);
     }
 
+    @Test
+    @Transactional
+    public void comprobarRelacionEliminarUsuarioBD() {
+        // GIVEN
+        // Un usuario perteneciente a un equipo
+        Usuario usuario = new Usuario("Usuario Ejemplo");
+        usuarioRepository.save(usuario);
+
+        Equipo equipo = new Equipo("Equipo A");
+        equipoRepository.save(equipo);
+
+        equipo.addUsuario(usuario);
+
+        // WHEN
+        // El usuario pertenece al grupo
+        Equipo equipoBD = equipoRepository.findById(equipo.getId()).orElse(null);
+        Usuario usuarioBD = usuarioRepository.findById(usuario.getId()).orElse(null);
+
+        assertThat(equipoBD.getUsuarios()).hasSize(1);
+        assertThat(equipoBD.getUsuarios()).contains(usuarioBD);
+        assertThat(usuarioBD.getEquipos()).hasSize(1);
+        assertThat(usuarioBD.getEquipos()).contains(equipoBD);
+
+        // Lo eliminamos del equipo
+        equipo.removeUsuario(usuario);
+
+        // THEN
+        // El usuario no se encuentra en el equipo
+        equipoBD = equipoRepository.findById(equipo.getId()).orElse(null);
+        usuarioBD = usuarioRepository.findById(usuario.getId()).orElse(null);
+
+        assertThat(equipo.getUsuarios()).hasSize(0);
+        assertThat(equipo.getUsuarios()).isEmpty();
+        assertThat(usuario.getEquipos()).hasSize(0);
+        assertThat(usuario.getEquipos()).isEmpty();
+    }
 }
