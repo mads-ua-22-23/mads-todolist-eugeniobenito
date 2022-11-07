@@ -112,4 +112,40 @@ public class EquipoWebTest {
                         containsString("user@ua"),
                         containsString("Equipo A")))));
     }
+
+    @Test
+    public void servicioListadoEquiposSalirDeEquipoOpcion() throws Exception {
+
+        // GIVEN
+        // Un usuario con correo e ID
+        Usuario usuario = new Usuario("user@ua");
+        usuario.setNombre("Usuario Ejemplo");
+        usuario.setId(1L);
+
+        // Un equipo con el usuario creado como miembro
+        Equipo equipo = new Equipo("Equipo A");
+        usuario.getEquipos().add(equipo);
+
+        List<Equipo> listaEquipos = new ArrayList<Equipo>();
+        listaEquipos.add(equipo);
+
+        // Mockeamos el método usuarioLogeado para que nos devuelva un valor
+        when(managerUserSession.usuarioLogeado()).thenReturn(usuario.getId());
+
+        // Mockeamos el servicio de obtención de todos los equipos para que nos devuelva
+        when(equipoService.findAllOrderedByName()).thenReturn(listaEquipos);
+
+        // Mockeamos el servicio de búsqueda por Id para que nos devuelva el
+        // usuario que acabamos de crear
+        when(usuarioService.findById(usuario.getId())).thenReturn(usuario);
+
+        // WHEN, THEN
+        // Realizamos una petición GET: /equipos nos redirecciona a la
+        // página de listado de equipos
+        this.mockMvc.perform(get("/equipos"))
+                .andExpect((content().string(allOf(
+                        containsString("Lista de Equipos"),
+                        containsString("Salir del equipo"),
+                        containsString("Equipo A")))));
+    }
 }

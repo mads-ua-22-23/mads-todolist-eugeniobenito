@@ -7,6 +7,7 @@ import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -74,6 +75,21 @@ public class EquipoController {
             throw new UsuarioNoLogeadoException();
 
         equipoService.addUsuarioEquipo(usuario_id, equipo_id);
+        return "";
+    }
+
+    @DeleteMapping("/equipos/{idEquipo}/usuarios/{idUsuario}")
+    @ResponseBody
+    public String eliminarUsuarioEquipo(@PathVariable(value = "idEquipo") Long equipo_id,
+            @PathVariable(value = "idUsuario") Long usuario_id,
+            Model model, HttpSession session) {
+
+        Long idUsuarioLogeado = managerUserSession.usuarioLogeado();
+
+        if (idUsuarioLogeado == null)
+            throw new UsuarioNoLogeadoException();
+
+        equipoService.removeUsuarioEquipo(usuario_id, equipo_id);
         return "";
     }
 }

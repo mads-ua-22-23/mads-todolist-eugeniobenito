@@ -37,6 +37,10 @@
                                     class="btn btn-primary btn-xs" onmouseover="" style="cursor: pointer;"
                                     th:onclick="'post(\'/equipos/'  + ${equipo.id} + '/usuarios/' + ${usuario.id} + '\');'">Unirme al equipo
                                 </button>
+                                <button th:if="${#lists.contains(usuario.equipos, equipo)}"
+                                    class="btn btn-danger btn-xs" onmouseover="" style="cursor: pointer;"
+                                    th:onclick="'del(\'/equipos/'  + ${equipo.id} + '/usuarios/' + ${usuario.id} + '\');'">Salir del equipo
+                                </button>
                             </td>
                         </tr>
                     </tbody>
@@ -46,12 +50,19 @@
     </div>
     <div th:replace=" fragments::javascript" />
 
-    <!-- Lanzamos una petición POST por JavaScript para ñadir un usuario a un equipo -->
+    <!-- Lanzamos una petición POST por JavaScript para añadir un usuario a un equipo -->
+    <!-- Lanzamos una petición DELETE por JavaScript para eliminar a un usuario de un equipo -->
 
     <script type="text/javascript">
         function post(url) {
             fetch(url, {
                 method: 'POST'
+            }).then((res) => location.reload());
+        }
+
+        function del(url) {
+            fetch(url, {
+                method: 'DELETE'
             }).then((res) => location.reload());
         }
     </script>
