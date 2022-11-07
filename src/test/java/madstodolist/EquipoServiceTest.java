@@ -3,9 +3,11 @@ package madstodolist;
 import madstodolist.model.Equipo;
 import madstodolist.model.Usuario;
 import madstodolist.service.EquipoService;
+import madstodolist.service.EquipoServiceException;
 import madstodolist.service.UsuarioService;
 
 import org.hibernate.LazyInitializationException;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -134,5 +136,16 @@ public class EquipoServiceTest {
 
         assertThat(usuarios_equipo).isEmpty();
         assertThat(usuarioBD.getEquipos()).isEmpty();
+    }
+
+    @Test
+    public void servicioCrearEquipoExcepcionNombreVacio() {
+        // WHEN, THEN   
+        // Creamos un equipo con el nombre vacío se lanza una excepción
+        // de tipo EquipoServiceException
+        
+        Assertions.assertThrows(EquipoServiceException.class, () -> {
+            equipoService.crearEquipo("");
+        });
     }
 }
