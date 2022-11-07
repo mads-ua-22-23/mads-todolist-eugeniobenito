@@ -60,7 +60,7 @@ public class LoginController {
     @GetMapping("/registro")
     public String registroForm(Model model) {
         RegistroData registroData = new RegistroData();
-        boolean isAdmin = (usuarioService.findAdmin() != null) ? true : false;
+        boolean isAdmin = (usuarioService.findAdmin() == null) ? false : true;
         registroData.setIsAdmin(isAdmin);  
         
         model.addAttribute("registroData", registroData);
@@ -80,12 +80,8 @@ public class LoginController {
             return "formRegistro";
         }
 
-        if (registroData.getIsAdmin() && usuarioService.findAdmin() != null) {
-            model.addAttribute("registroData", registroData);
-            model.addAttribute("error", "Ya existe un usuario administrador");
-            return "formRegistro";
-        }
-
+        if (usuarioService.findAdmin() != null) 
+            registroData.setIsAdmin(false);
 
         Usuario usuario = new Usuario(registroData.geteMail());
         usuario.setPassword(registroData.getPassword());
