@@ -94,4 +94,17 @@ public class EquipoService {
         List<Usuario> usuarios = new ArrayList(equipo.getUsuarios());
         return usuarios;
     }
+
+    @Transactional
+    public Equipo modificaNombreEquipo(Long equipo_id, String nuevo_nombre) {
+        logger.debug("Cambiando el nombre del equipo: " + equipo_id + " a " + nuevo_nombre);
+        Equipo equipo = equipoRepository.findById(equipo_id).orElse(null);
+
+        if (equipo == null)
+            throw new EquipoServiceException("No existe el equipo");
+
+        equipo.setNombre(nuevo_nombre);
+        equipoRepository.save(equipo);
+        return equipo;
+    }
 }

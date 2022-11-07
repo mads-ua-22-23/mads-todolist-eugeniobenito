@@ -234,4 +234,21 @@ public class EquipoServiceTest {
             equipoService.usuariosEquipo(1L);
         });
     }
+
+    @Test
+    public void testModificarNombreEquipo() {
+        // GIVEN 
+        // Un equipo guardado en la base de datos
+        Equipo equipo = equipoService.crearEquipo("Proyecto 1");
+        Equipo equipoBd = equipoService.recuperarEquipo(equipo.getId());        
+        assertThat(equipoBd.getNombre()).isEqualTo("Proyecto 1");
+
+        // WHEN
+        // Cambiamos su nombre
+        equipoService.modificaNombreEquipo(equipoBd.getId(), "Proyecto MADS");
+
+        // THEN
+        // Lo recuperamos de la base de datos y el nombre se ha modificado
+        assertThat(equipoBd.getNombre()).isEqualTo("Proyecto 1");
+    }
 }
