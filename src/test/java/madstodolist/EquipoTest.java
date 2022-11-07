@@ -63,6 +63,13 @@ public class EquipoTest {
         assertThat(equipo2).isNotEqualTo(equipo3);
     }
 
+    @Test
+    public void cambiarNombreEquipo() {
+        Equipo equipo = new Equipo("Proyecto P1");
+        equipo.setNombre("Proyecto MADS");
+        assertThat(equipo.getNombre()).isEqualTo("Proyecto MADS");
+    }
+
     //
     // Tests EquipoRepository.
     //
