@@ -87,10 +87,10 @@ public class EquipoService {
     public List<Usuario> usuariosEquipo(Long equipo_id) {
         logger.debug("Devolviendo el listado de usuarios del equipo " + equipo_id);
         Equipo equipo = equipoRepository.findById(equipo_id).orElse(null);
-        
+
         if (equipo == null)
             throw new EquipoServiceException("No existe el equipo");
-        
+
         List<Usuario> usuarios = new ArrayList(equipo.getUsuarios());
         return usuarios;
     }
@@ -106,5 +106,23 @@ public class EquipoService {
         equipo.setNombre(nuevo_nombre);
         equipoRepository.save(equipo);
         return equipo;
+    }
+
+    @Transactional
+    public void removeEquipo(Long equipo_id) {
+        logger.debug("Borrando equipo " + equipo_id);
+        Equipo equipo = equipoRepository.findById(equipo_id).orElse(null);
+
+        if (equipo == null)
+            throw new EquipoServiceException("No existe el equipo");
+
+        List<Usuario> usuarios = new ArrayList(equipo.getUsuarios());
+
+        for (Usuario usuario : usuarios) {
+            if (usuario.getEquipos().contains(equipo))
+                equipo.removeUsuario(usuario);
+        }
+
+        equipoRepository.delete(equipo);
     }
 }
