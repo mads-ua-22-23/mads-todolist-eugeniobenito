@@ -87,6 +87,10 @@ public class EquipoService {
     public List<Usuario> usuariosEquipo(Long equipo_id) {
         logger.debug("Devolviendo el listado de usuarios del equipo " + equipo_id);
         Equipo equipo = equipoRepository.findById(equipo_id).orElse(null);
+        
+        if (equipo == null)
+            throw new EquipoServiceException("No existe el equipo");
+        
         List<Usuario> usuarios = new ArrayList(equipo.getUsuarios());
         return usuarios;
     }

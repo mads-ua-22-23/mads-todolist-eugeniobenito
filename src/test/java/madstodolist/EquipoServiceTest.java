@@ -223,4 +223,15 @@ public class EquipoServiceTest {
             equipoService.removeUsuarioEquipo(usuarioBD.getId(), equipo.getId());
         });
     }
+
+    @Test
+    public void servicioListarUsuarioEquipoNoExistente() {
+        // WHEN, THEN   
+        // Intentamos listar a los usuarios de un equipo no existente en la base de datos
+        // lanza excepción de tipo EquipoServiceException
+        
+        Assertions.assertThrows(EquipoServiceException.class, () -> {
+            equipoService.usuariosEquipo(1L);
+        });
+    }
 }
