@@ -52,12 +52,14 @@ public class NavbarWebTest {
         String[] urls = { "/usuarios/" + usuarioId.toString() + "/tareas",
                           "/usuarios/" + usuarioId.toString() + "/tareas/nueva",
                           "/about",
+                          "/equipos",
         };
 
         for(String url : urls) {
             this.mockMvc.perform(get(url))
             .andExpect((content().string(allOf(
                     containsString("ToDoList"),
+                    containsString("Equipos"),
                     containsString("Tareas"),
                     containsString("Cuenta"),
                     containsString("Usuario Ejemplo")))));        
