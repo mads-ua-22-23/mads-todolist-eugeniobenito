@@ -171,4 +171,16 @@ public class EquipoServiceTest {
             equipoService.addUsuarioEquipo(1L, 1L);
         });
     }
+
+    @Test
+    public void servicioEliminarUsuarioEquipoNoExistente() {
+        // WHEN, THEN   
+        // Intentamos añadir a un  equipo no existente en la base de datos
+        // un usuario no existente
+        // lanza excepción de tipo EquipoServiceException
+        
+        Assertions.assertThrows(EquipoServiceException.class, () -> {
+            equipoService.removeUsuarioEquipo(1L, 1L);
+        });
+    }
 }
