@@ -25,16 +25,24 @@ public class EquipoService {
 
     @Transactional
     public Equipo crearEquipo(String nombre) {
+        if (nombre.equals(""))
+            throw new EquipoServiceException("El nombre del equipo no puede estar vacío");
+
         logger.debug("Creando equipo " + nombre);
         Equipo equipo = new Equipo(nombre);
         equipoRepository.save(equipo);
-        return equipo; 
+        return equipo;
     }
 
     @Transactional(readOnly = true)
     public Equipo recuperarEquipo(Long id) {
         logger.debug("Devolviendo el equipo con id: " + id);
-        return equipoRepository.findById(id).orElse(null);
+        Equipo equipoBD = equipoRepository.findById(id).orElse(null);
+
+        if (equipoBD == null)
+            throw new EquipoServiceException("No existe el equipo");
+
+        return equipoBD;
     }
 
     @Transactional(readOnly = true)
@@ -47,8 +55,31 @@ public class EquipoService {
     public void addUsuarioEquipo(Long usuario_id, Long equipo_id) {
         logger.debug("Añadiendo el usuario " + usuario_id + " al equipo " + equipo_id);
         Equipo equipo = equipoRepository.findById(equipo_id).orElse(null);
-        Usuario usuario = usuarioRepository.findById(usuario_id).orElse(null);;
+        Usuario usuario = usuarioRepository.findById(usuario_id).orElse(null);
+
+        if (equipo == null || usuario == null)
+            throw new EquipoServiceException("No existe el equipo o el usuario");
+
+        if (equipo.getUsuarios().contains(usuario))
+            throw new EquipoServiceException("El usuario ya es miembro del equipo");
+
         equipo.addUsuario(usuario);
+        equipoRepository.save(equipo);
+    }
+
+    @Transactional
+    public void removeUsuarioEquipo(Long usuario_id, Long equipo_id) {
+        logger.debug("Eliminando el usuario " + usuario_id + " del equipo " + equipo_id);
+        Equipo equipo = equipoRepository.findById(equipo_id).orElse(null);
+        Usuario usuario = usuarioRepository.findById(usuario_id).orElse(null);
+
+        if (equipo == null || usuario == null)
+            throw new EquipoServiceException("No existe el equipo o el usuario");
+
+        if (!equipo.getUsuarios().contains(usuario))
+            throw new EquipoServiceException("El usuario no es miembro del equipo");
+
+        equipo.removeUsuario(usuario);
         equipoRepository.save(equipo);
     }
 
@@ -56,7 +87,11 @@ public class EquipoService {
     public List<Usuario> usuariosEquipo(Long equipo_id) {
         logger.debug("Devolviendo el listado de usuarios del equipo " + equipo_id);
         Equipo equipo = equipoRepository.findById(equipo_id).orElse(null);
-        List <Usuario> usuarios = new ArrayList(equipo.getUsuarios());
+        
+        if (equipo == null)
+            throw new EquipoServiceException("No existe el equipo");
+        
+        List<Usuario> usuarios = new ArrayList(equipo.getUsuarios());
         return usuarios;
     }
 }
