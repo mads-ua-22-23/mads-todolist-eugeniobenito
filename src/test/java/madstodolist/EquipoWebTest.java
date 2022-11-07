@@ -145,7 +145,43 @@ public class EquipoWebTest {
         this.mockMvc.perform(get("/equipos"))
                 .andExpect((content().string(allOf(
                         containsString("Lista de Equipos"),
+                        containsString("Crear Equipo"),
                         containsString("Salir del equipo"),
                         containsString("Equipo A")))));
+    }
+
+    @Test
+    public void servicioObtenerFormularioCrearEquipo() throws Exception {
+
+        // GIVEN
+        // Un usuario con correo e ID
+        Usuario usuario = new Usuario("user@ua");
+        usuario.setNombre("Usuario Ejemplo");
+        usuario.setId(1L);
+
+        // Un equipo 
+        Equipo equipo = new Equipo("Equipo A");
+
+        List<Equipo> listaEquipos = new ArrayList<Equipo>();
+        listaEquipos.add(equipo);
+
+        // Mockeamos el método usuarioLogeado para que nos devuelva un valor
+        when(managerUserSession.usuarioLogeado()).thenReturn(usuario.getId());
+
+        // Mockeamos el servicio de obtención de todos los equipos para que nos devuelva
+        when(equipoService.findAllOrderedByName()).thenReturn(listaEquipos);
+
+        // Mockeamos el servicio de búsqueda por Id para que nos devuelva el
+        // usuario que acabamos de crear
+        when(usuarioService.findById(usuario.getId())).thenReturn(usuario);
+
+        // WHEN, THEN
+        // Realizamos una petición GET: /equipos/nuevo nos redirecciona al
+        // formulario de creación de un equipo
+        this.mockMvc.perform(get("/equipos/nuevo"))
+                .andExpect((content().string(allOf(
+                        containsString("Crea un"),
+                        containsString("Nombre del Equipo:"),
+                        containsString("Crear Equipo")))));
     }
 }
