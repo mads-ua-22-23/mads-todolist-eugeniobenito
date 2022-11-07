@@ -52,6 +52,15 @@ public class EquipoService {
         equipoRepository.save(equipo);
     }
 
+    @Transactional
+    public void removeUsuarioEquipo(Long usuario_id, Long equipo_id) {
+        logger.debug("Eliminando el usuario " + usuario_id + " del equipo " + equipo_id);
+        Equipo equipo = equipoRepository.findById(equipo_id).orElse(null);
+        Usuario usuario = usuarioRepository.findById(usuario_id).orElse(null);;
+        equipo.removeUsuario(usuario);
+        equipoRepository.save(equipo);
+    }
+
     @Transactional(readOnly = true)
     public List<Usuario> usuariosEquipo(Long equipo_id) {
         logger.debug("Devolviendo el listado de usuarios del equipo " + equipo_id);

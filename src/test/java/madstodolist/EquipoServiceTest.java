@@ -50,8 +50,8 @@ public class EquipoServiceTest {
         // Los equipos están ordenados por nombre
         assertThat(equipos).hasSize(2);
         assertThat(equipos.get(0).getNombre()).isEqualTo("Proyecto AAA");
-        assertThat(equipos.get(1).getNombre()).isEqualTo("Proyecto BBB");        
-    }    
+        assertThat(equipos.get(1).getNombre()).isEqualTo("Proyecto BBB");
+    }
 
     @Test
     public void accesoUsuariosGeneraExcepcion() {
@@ -108,5 +108,31 @@ public class EquipoServiceTest {
         // Se recuperan también los equipos del usuario,
         // porque la relación entre usuarios y equipos es EAGER
         assertThat(usuarioBD.getEquipos()).hasSize(1);
+    }
+
+    @Test
+    public void comprobarEliminarRelacionUsuarioEquipos() {
+        // GIVEN
+        // Un equipo creado en la base de datos y un usuario
+        // registrado miembro del mismo
+        Equipo equipo = equipoService.crearEquipo("Proyecto 1");
+        Usuario usuario = new Usuario("user@ua");
+        usuario.setPassword("123");
+        usuario = usuarioService.registrar(usuario);
+        equipoService.addUsuarioEquipo(usuario.getId(), equipo.getId());
+
+        // WHEN
+        // Eliminamos al usuario del equipo
+        equipoService.removeUsuarioEquipo(usuario.getId(), equipo.getId());
+
+        // THEN
+        // ERecuperamos al usuario y al equipo y este no pertenece al mismo
+        Equipo equipoBD = equipoService.recuperarEquipo(equipo.getId());
+        Usuario usuarioBD = usuarioService.findById(usuario.getId());
+        
+        List<Usuario> usuarios_equipo = equipoService.usuariosEquipo(equipoBD.getId());
+
+        assertThat(usuarios_equipo).isEmpty();
+        assertThat(usuarioBD.getEquipos()).isEmpty();
     }
 }
