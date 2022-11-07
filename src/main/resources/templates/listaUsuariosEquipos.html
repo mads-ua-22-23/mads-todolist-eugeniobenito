@@ -1,36 +1,34 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="fragments :: head (titulo='Equipos')"></head>
+<head th:replace="fragments :: head (titulo=${equipo.nombre})"></head>
 
 <body>
     <nav th:insert="fragments::navbar"></nav>
     <div class="container-fluid">
         <div class="row mt-3">
             <div class="col">
-                <h2>Lista de Equipos</h2>
+                <h2>Lista de miembros del Equipo: <strong><span th:text="${equipo.nombre}"></span></strong></h2>
             </div>
         </div>
         <div class="row mt-2">
             <div class="col">
                 <table class="table table-striped">
                     <caption>
-                        <span th:with="convertedList=${#lists.toList(equipos)}">
-                            Total equipos: <strong><span th:text="${#lists.size(convertedList)}" />
+                        <span th:with="convertedList=${#lists.toList(usuarios)}">
+                            Total usuarios: <strong><span th:text="${#lists.size(convertedList)}" />
                         </span></strong>
                     </caption>
                     <thead class="thead-dark">
                         <tr>
-                            <th>Nombre</th>
+                            <th>Id</th>
+                            <th>Email</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr th:each="equipo : ${equipos}">
-                            <td> 
-                                <a class="btn btn-link" th:href="@{/equipos/{id}(id=${equipo.id})}">
-                                    <span th:text="${equipo.nombre}"></span>
-                                </a>
-                            </td>
+                        <tr th:each="usuario : ${usuarios}">
+                            <td><span th:text="${usuario.id}"></span></td>
+                            <td><span th:text="${usuario.email}"></span></td>
                         </tr>
                     </tbody>
                 </table>
