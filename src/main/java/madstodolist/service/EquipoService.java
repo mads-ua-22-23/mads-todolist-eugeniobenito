@@ -60,6 +60,9 @@ public class EquipoService {
         if (equipo == null || usuario == null) 
             throw new EquipoServiceException("No existe el equipo o el usuario");
 
+        if (equipo.getUsuarios().contains(usuario))
+            throw new EquipoServiceException("El usuario ya es miembro del equipo");
+
         equipo.addUsuario(usuario);
         equipoRepository.save(equipo);
     }

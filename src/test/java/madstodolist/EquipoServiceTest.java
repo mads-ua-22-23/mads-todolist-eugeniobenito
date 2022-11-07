@@ -183,4 +183,25 @@ public class EquipoServiceTest {
             equipoService.removeUsuarioEquipo(1L, 1L);
         });
     }
+
+    @Test
+    public void servicioAñadirUsuarioYaExistenteEnEquipo() {
+        /// Un equipo creado en la base de datos y un usuario registrado
+        // miembro del equipo
+        Equipo equipo = equipoService.crearEquipo("Proyecto 1");
+        Usuario usuario = new Usuario("user@ua");
+        usuario.setPassword("123");
+        usuario = usuarioService.registrar(usuario);
+
+        equipoService.addUsuarioEquipo(usuario.getId(), equipo.getId());
+
+        // WHEN, THEN
+        // Intentamos añadir al usuario miembro se lanza excepción de
+        // tipo EquipoServiceException
+        Usuario usuarioBD = usuarioService.findById(usuario.getId());
+                
+        Assertions.assertThrows(EquipoServiceException.class, () -> {
+            equipoService.addUsuarioEquipo(usuarioBD.getId(), equipo.getId());
+        });
+    }
 }
