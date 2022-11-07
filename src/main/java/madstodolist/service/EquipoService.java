@@ -31,15 +31,15 @@ public class EquipoService {
         logger.debug("Creando equipo " + nombre);
         Equipo equipo = new Equipo(nombre);
         equipoRepository.save(equipo);
-        return equipo; 
+        return equipo;
     }
 
     @Transactional(readOnly = true)
     public Equipo recuperarEquipo(Long id) {
         logger.debug("Devolviendo el equipo con id: " + id);
         Equipo equipoBD = equipoRepository.findById(id).orElse(null);
-        
-        if (equipoBD == null) 
+
+        if (equipoBD == null)
             throw new EquipoServiceException("No existe el equipo");
 
         return equipoBD;
@@ -57,7 +57,7 @@ public class EquipoService {
         Equipo equipo = equipoRepository.findById(equipo_id).orElse(null);
         Usuario usuario = usuarioRepository.findById(usuario_id).orElse(null);
 
-        if (equipo == null || usuario == null) 
+        if (equipo == null || usuario == null)
             throw new EquipoServiceException("No existe el equipo o el usuario");
 
         if (equipo.getUsuarios().contains(usuario))
@@ -73,8 +73,11 @@ public class EquipoService {
         Equipo equipo = equipoRepository.findById(equipo_id).orElse(null);
         Usuario usuario = usuarioRepository.findById(usuario_id).orElse(null);
 
-        if (equipo == null || usuario == null) 
+        if (equipo == null || usuario == null)
             throw new EquipoServiceException("No existe el equipo o el usuario");
+
+        if (!equipo.getUsuarios().contains(usuario))
+            throw new EquipoServiceException("El usuario no es miembro del equipo");
 
         equipo.removeUsuario(usuario);
         equipoRepository.save(equipo);
@@ -84,7 +87,7 @@ public class EquipoService {
     public List<Usuario> usuariosEquipo(Long equipo_id) {
         logger.debug("Devolviendo el listado de usuarios del equipo " + equipo_id);
         Equipo equipo = equipoRepository.findById(equipo_id).orElse(null);
-        List <Usuario> usuarios = new ArrayList(equipo.getUsuarios());
+        List<Usuario> usuarios = new ArrayList(equipo.getUsuarios());
         return usuarios;
     }
 }

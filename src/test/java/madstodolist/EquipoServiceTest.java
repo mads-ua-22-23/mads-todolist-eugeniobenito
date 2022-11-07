@@ -204,4 +204,23 @@ public class EquipoServiceTest {
             equipoService.addUsuarioEquipo(usuarioBD.getId(), equipo.getId());
         });
     }
+
+    @Test
+    public void servicioEliminarUsuarioNoExistenteEnEquipo() {
+        /// Un equipo creado en la base de datos y un usuario registrado
+        // NO miembro del equipo
+        Equipo equipo = equipoService.crearEquipo("Proyecto 1");
+        Usuario usuario = new Usuario("user@ua");
+        usuario.setPassword("123");
+        usuario = usuarioService.registrar(usuario);
+
+        // WHEN, THEN
+        // Intentamos eliminar al usuario NO miembro se lanza excepción de
+        // tipo EquipoServiceException
+        Usuario usuarioBD = usuarioService.findById(usuario.getId());
+                
+        Assertions.assertThrows(EquipoServiceException.class, () -> {
+            equipoService.removeUsuarioEquipo(usuarioBD.getId(), equipo.getId());
+        });
+    }
 }
