@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import madstodolist.authentication.ManagerUserSession;
+import madstodolist.controller.exception.EquipoNotFoundException;
 import madstodolist.controller.exception.UsuarioNoLogeadoException;
 import madstodolist.model.Equipo;
 import madstodolist.model.Usuario;
@@ -35,6 +35,15 @@ public class EquipoController {
 
     @Autowired
     ManagerUserSession managerUserSession;
+
+    private void comprobarUsuarioAdminYLogeado(Long idUsuario) {
+        Long idUsuarioLogeado = managerUserSession.usuarioLogeado();
+        Usuario admin = usuarioService.findAdmin();
+
+        if (admin == null || idUsuarioLogeado == null || admin.getId() != idUsuarioLogeado)
+            throw new UsuarioNoLogeadoException();
+
+    }
 
     @GetMapping("/equipos")
     public String listadoEquipos(Model model, HttpSession session) {
@@ -126,5 +135,24 @@ public class EquipoController {
 
         equipoService.removeUsuarioEquipo(usuario_id, equipo_id);
         return "";
+    }
+
+    @GetMapping("/equipos/{id}/editar")
+    public String formEditarNombreEquipo(@PathVariable(value = "id") Long id_equipo,
+            @ModelAttribute EquipoData equipoData, Model model) {
+
+        comprobarUsuarioAdminYLogeado(managerUserSession.usuarioLogeado());
+
+        Equipo equipo = equipoService.recuperarEquipo(id_equipo);
+
+        if (equipo == null)
+            throw new EquipoNotFoundException();
+
+        Usuario admin = usuarioService.findAdmin();
+
+        model.addAttribute("equipo", equipo);
+        model.addAttribute("usuario", admin);
+        equipoData.setNombre(equipo.getNombre());
+        return "formEditarEquipo";
     }
 }

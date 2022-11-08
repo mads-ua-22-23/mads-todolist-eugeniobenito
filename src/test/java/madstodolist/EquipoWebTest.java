@@ -206,4 +206,41 @@ public class EquipoWebTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/equipos"));
     }
+
+    @Test
+    public void servicioModificarEquipo() throws Exception {
+
+        // GIVEN
+        // Un usuario con correo e ID
+        Usuario usuario = new Usuario("user@ua");
+        usuario.setNombre("Usuario Ejemplo");
+        usuario.setId(1L);
+        usuario.setIsAdmin(true);
+
+        // Un equipo
+        Equipo equipo = new Equipo("Equipo A");
+        equipo.setId(1L);
+
+        List<Equipo> listaEquipos = new ArrayList<Equipo>();
+        listaEquipos.add(equipo);
+
+        // Mockeamos el método usuarioLogeado para que nos devuelva un valor
+        when(managerUserSession.usuarioLogeado()).thenReturn(usuario.getId());
+
+        // Mockeamos el servicio de obtención del administrador para 
+        // que nos devuelva al usuario que acabamos de crea
+        when(usuarioService.findAdmin()).thenReturn(usuario);
+
+        // Mockeamos el servicio de obtención de un equipo
+        when(equipoService.recuperarEquipo(1L)).thenReturn(equipo);
+
+        // WHEN, THEN
+        // Realizamos una petición GET: /equipos/1/editar nos redirecciona
+        // al formulario de editar el equipo
+        this.mockMvc.perform(get("/equipos/1/editar"))
+                .andExpect((content().string(allOf(
+                        containsString("form method=\"post\""),
+                        containsString("Cambiar nombre del Equipo Equipo A")
+        ))));
+    }    
 }
