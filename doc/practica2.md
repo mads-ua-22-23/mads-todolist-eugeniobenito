@@ -1,4 +1,4 @@
-# ToDoLit 1.1.0
+# ToDoList 1.1.0
 
 Esta nueva versión de la aplicación incorpora **5 nuevas _features_**:
 
