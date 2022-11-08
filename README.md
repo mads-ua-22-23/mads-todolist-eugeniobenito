@@ -33,5 +33,5 @@ Una vez lanzada la aplicación puedes abrir un navegador y probar la página de 
 Puedes descargar la imagen ejecutando:
 
 ```
-docker pull eugeniobenito/mads-todolist:1.1.0
+docker pull eugeniobenito/mads-todolist:1.2.0
 ```
