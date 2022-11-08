@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.validation.BindingResult;
 
 import madstodolist.authentication.ManagerUserSession;
@@ -154,5 +155,22 @@ public class EquipoController {
         model.addAttribute("usuario", admin);
         equipoData.setNombre(equipo.getNombre());
         return "formEditarEquipo";
+    }
+
+    @PostMapping("/equipos/{id}/editar")
+    public String grabaEquipoModificado(@PathVariable(value = "id") Long equipo_id,
+            Model model, RedirectAttributes flash, @ModelAttribute EquipoData equipoData) {
+
+        comprobarUsuarioAdminYLogeado(managerUserSession.usuarioLogeado());
+
+        Equipo equipo = equipoService.recuperarEquipo(equipo_id);
+
+        if (equipo == null)
+            throw new EquipoNotFoundException();
+
+        equipoService.modificaNombreEquipo(equipo_id, equipoData.getNombre());
+        flash.addFlashAttribute("mensaje", "Equipo modificado correctamente");
+        
+        return "redirect:/equipos/" + equipo.getId();
     }
 }

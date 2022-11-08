@@ -12,6 +12,7 @@ import madstodolist.service.EquipoService;
 import madstodolist.service.UsuarioService;
 
 import static org.hamcrest.Matchers.*;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -242,5 +243,42 @@ public class EquipoWebTest {
                         containsString("form method=\"post\""),
                         containsString("Cambiar nombre del Equipo Equipo A")
         ))));
-    }    
+    }
+        
+    @Test
+    public void servicioModificarEquipoPost() throws Exception {
+
+        // GIVEN
+        // Un usuario con correo e ID
+        Usuario usuario = new Usuario("user@ua");
+        usuario.setNombre("Usuario Ejemplo");
+        usuario.setId(1L);
+
+        // Un equipo
+        Equipo equipo = new Equipo("Equipo A");
+        equipo.setId(1L);
+
+        List<Equipo> listaEquipos = new ArrayList<Equipo>();
+        listaEquipos.add(equipo);
+
+        // Mockeamos el método usuarioLogeado para que nos devuelva un valor
+        when(managerUserSession.usuarioLogeado()).thenReturn(usuario.getId());
+
+        // Mockeamos el servicio de obtención del administrador para 
+        // que nos devuelva al usuario que acabamos de crea
+        when(usuarioService.findAdmin()).thenReturn(usuario);
+
+        // Mockeamos el servicio de obtención de un equipo
+        when(equipoService.recuperarEquipo(1L)).thenReturn(equipo);
+
+        // Mockeamos el servicio de edición de un equipo
+        when(equipoService.modificaNombreEquipo(1L, "MADS")).thenReturn(equipo);
+
+        // WHEN, THEN
+        // Realizamos una petición GET: /equipos/nuevo nos redirecciona
+        // a la lista de equipos
+        this.mockMvc.perform(post("/equipos/1/editar"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/equipos/1"));
+    }
 }
