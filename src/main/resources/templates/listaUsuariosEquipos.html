@@ -9,6 +9,7 @@
         <div class="row mt-3">
             <div class="col">
                 <h2>Lista de miembros del Equipo: <strong><span th:text="${equipo.nombre}"></span></strong></h2>
+                <a class="btn btn-secondary" th:href="@{/equipos/{id}/editar(id=${equipo.id})}">Modificar Equipo</a>
             </div>
         </div>
         <div class="row mt-2">
