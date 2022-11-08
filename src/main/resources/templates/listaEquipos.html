@@ -41,6 +41,10 @@
                                     class="btn btn-danger btn-xs" onmouseover="" style="cursor: pointer;"
                                     th:onclick="'del(\'/equipos/'  + ${equipo.id} + '/usuarios/' + ${usuario.id} + '\');'">Salir del equipo
                                 </button>
+                                <button th:if="${usuario.isAdmin == true}"
+                                    class="btn btn-danger btn-xs" onmouseover="" style="cursor: pointer;"
+                                    th:onclick="'deleteTeam(\'/equipos/'  + ${equipo.id} +  '\');'">X
+                                </button>
                             </td>
                         </tr>
                     </tbody>
@@ -75,6 +79,14 @@
             fetch(url, {
                 method: 'DELETE'
             }).then((res) => location.reload());
+        }
+
+        function deleteTeam(url) {
+            if (confirm('¿Estás seguro/a de que deseas eliminar el equipo?')) {
+                fetch(url, {
+                    method: 'DELETE'
+                }).then((res) => location.reload());
+            }
         }
     </script>
 

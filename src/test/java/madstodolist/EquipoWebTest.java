@@ -12,7 +12,6 @@ import madstodolist.service.EquipoService;
 import madstodolist.service.UsuarioService;
 
 import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -280,5 +279,49 @@ public class EquipoWebTest {
         this.mockMvc.perform(post("/equipos/1/editar"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/equipos/1"));
+    }
+
+    @Test
+    public void servicioListadoEquiposEliminarEquipoOpcion() throws Exception {
+
+        // GIVEN
+        // Un usuario con correo e ID
+        Usuario usuario = new Usuario("user@ua");
+        usuario.setNombre("Usuario Ejemplo");
+        usuario.setId(1L);
+        usuario.setIsAdmin(true);
+
+        // Un equipo con el usuario creado como miembro
+        Equipo equipo = new Equipo("Equipo A");
+        equipo.setId(1L);
+        usuario.getEquipos().add(equipo);
+
+        List<Equipo> listaEquipos = new ArrayList<Equipo>();
+        listaEquipos.add(equipo);
+
+        // Mockeamos el método usuarioLogeado para que nos devuelva un valor
+        when(managerUserSession.usuarioLogeado()).thenReturn(usuario.getId());
+
+        // Mockeamos el servicio de obtención de todos los equipos para que nos devuelva
+        when(equipoService.findAllOrderedByName()).thenReturn(listaEquipos);
+
+        // Mockeamos el servicio de búsqueda por Id para que nos devuelva el
+        // usuario que acabamos de crear
+        when(usuarioService.findById(usuario.getId())).thenReturn(usuario);
+
+        // Mockeamos el servicio de obtención del administrador para 
+        // que nos devuelva al usuario que acabamos de crea
+        when(usuarioService.findAdmin()).thenReturn(usuario);
+
+        // WHEN, THEN
+        // Realizamos una petición GET: /equipos nos redirecciona a la
+        // página de listado de equipos
+        this.mockMvc.perform(get("/equipos"))
+                .andExpect((content().string(allOf(
+                        containsString("Lista de Equipos"),
+                        containsString("Crear Equipo"),
+                        containsString("Salir del equipo"),
+                        containsString("X"),
+                        containsString("Equipo A")))));
     }
 }

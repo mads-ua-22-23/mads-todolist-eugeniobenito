@@ -173,4 +173,20 @@ public class EquipoController {
         
         return "redirect:/equipos/" + equipo.getId();
     }
+
+    @DeleteMapping("/equipos/{idEquipo}")
+    @ResponseBody
+    public String eliminarEquipo(@PathVariable(value = "idEquipo") Long equipo_id,
+            Model model, HttpSession session) {
+
+        comprobarUsuarioAdminYLogeado(managerUserSession.usuarioLogeado());
+
+        Equipo equipo = equipoService.recuperarEquipo(equipo_id);
+
+        if (equipo == null)
+            throw new EquipoNotFoundException();
+
+        equipoService.removeEquipo(equipo_id);
+        return "";
+    }
 }
